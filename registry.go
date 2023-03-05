@@ -6,13 +6,19 @@ import (
 	"sync"
 )
 
-type Mux struct {
+func NewRegistry() *Registry {
+	return &Registry{
+		entries: make([]*Codec, 0),
+	}
+}
+
+type Registry struct {
 	mutext sync.Mutex
 
 	entries []*Codec
 }
 
-func (m *Mux) Register(codec *Codec) {
+func (m *Registry) Register(codec *Codec) {
 	m.mutext.Lock()
 	defer m.mutext.Unlock()
 
@@ -23,9 +29,9 @@ func (m *Mux) Register(codec *Codec) {
 	m.entries = append(m.entries, codec)
 }
 
-func (m *Mux) Discovery(ctx context.Context, data []byte) (*Codec, error) {
+func (m *Registry) Discovery(ctx context.Context, data []byte) (*Codec, error) {
 	for _, v := range m.entries {
-		if v.Enroller.Enroll(ctx, data) {
+		if v.Matcher.Match(ctx, data) {
 			return v, nil
 		}
 	}

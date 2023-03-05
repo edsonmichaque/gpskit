@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	mux := gpskit.Mux{}
+	mux := gpskit.NewRegistry()
 
 	codec := &gpskit.Codec{
-		Enroller: gpskit.EnrollerFunc(func(ctx context.Context, b []byte) bool {
+		Matcher: gpskit.MatcherFunc(func(ctx context.Context, b []byte) bool {
 			return true
 		}),
 		Decoder: gpskit.DecoderFunc(func(ctx context.Context, b []byte) (*gpskit.Command, error) {

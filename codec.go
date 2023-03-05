@@ -5,7 +5,7 @@ import (
 )
 
 type Codec struct {
-	Enroller Enroller
+	Matcher Matcher
 	Encoder  Encoder
 	Decoder  Decoder
 	Handler  *Handler
@@ -31,12 +31,12 @@ type Decoder interface {
 	Decode(context.Context, []byte) (*Command, error)
 }
 
-type EnrollerFunc func(context.Context, []byte) bool
+type MatcherFunc func(context.Context, []byte) bool
 
-func (e EnrollerFunc) Enroll(ctx context.Context, data []byte) bool {
+func (e MatcherFunc) Match(ctx context.Context, data []byte) bool {
 	return e(ctx, data)
 }
 
-type Enroller interface {
-	Enroll(context.Context, []byte) bool
+type Matcher interface {
+	Match(context.Context, []byte) bool
 }
