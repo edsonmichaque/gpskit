@@ -3,17 +3,20 @@ package example
 import (
 	"context"
 	"errors"
+	"net"
 
 	"github.com/edsonmichaque/gpskit"
 )
 
 func main() {
-	mux := gpskit.NewRegistry()
+	ln, err := net.Listen("tcp", ":12345")
+	if err != nil {
+		panic(err)
+	}
+
+	mux := gpskit.NewDispatcher(ln)
 
 	codec := &gpskit.Codec{
-		Matcher: gpskit.MatcherFunc(func(ctx context.Context, b []byte) bool {
-			return true
-		}),
 		Decoder: gpskit.DecoderFunc(func(ctx context.Context, b []byte) (*gpskit.Command, error) {
 			return nil, errors.New("not implemented")
 		}),
@@ -22,6 +25,6 @@ func main() {
 		}),
 	}
 
-	mux.Register(codec)
-
+	mux.RegisterFunc(gpskit.MatchAny, codec)
+	mux.Dispatch()
 }

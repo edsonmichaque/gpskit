@@ -5,10 +5,9 @@ import (
 )
 
 type Codec struct {
-	Matcher Matcher
-	Encoder  Encoder
-	Decoder  Decoder
-	Handler  *Handler
+	Encoder Encoder
+	Decoder Decoder
+	Handler *Handler
 }
 
 type EncoderFunc func(context.Context, *Command) ([]byte, error)
@@ -29,14 +28,4 @@ func (d DecoderFunc) Decode(ctx context.Context, data []byte) (*Command, error) 
 
 type Decoder interface {
 	Decode(context.Context, []byte) (*Command, error)
-}
-
-type MatcherFunc func(context.Context, []byte) bool
-
-func (e MatcherFunc) Match(ctx context.Context, data []byte) bool {
-	return e(ctx, data)
-}
-
-type Matcher interface {
-	Match(context.Context, []byte) bool
 }
